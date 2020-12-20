@@ -2,7 +2,6 @@ import React from "react";
 import { ImpulseSpinner as Spinner } from "react-spinners-kit";
 import { ipcRenderer } from 'electron';
 import './css/menu.css';
-import Footer from "./Footer";
 
 export default function Menu({ errored }: { errored: boolean }) {
 	return (
@@ -27,7 +26,6 @@ export default function Menu({ errored }: { errored: boolean }) {
 						}}>Open Game</button>
 					</>
 				}
-				<Footer />
 			</div>
 		</div>
 	);

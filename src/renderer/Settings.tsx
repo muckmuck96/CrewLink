@@ -52,7 +52,7 @@ const store = new Store<ISettings>({
 		},
 		serverURL: {
 			type: 'string',
-			default: 'http://54.193.94.35:9736',
+			default: 'http://195.201.36.166:9736',
 			format: 'uri'
 		},
 		pushToTalkShortcut: {
@@ -125,32 +125,6 @@ interface MediaDevice {
 	label: string;
 }
 
-type URLInputProps = {
-	initialURL: string,
-	onValidURL: (url: string) => void
-};
-
-function URLInput({ initialURL, onValidURL }: URLInputProps) {
-	const [isValidURL, setURLValid] = useState(true);
-	const [currentURL, setCurrentURL] = useState(initialURL);
-
-	useEffect(() => {
-		setCurrentURL(initialURL);
-	}, [initialURL]);
-
-	function onChange(event: React.ChangeEvent<HTMLInputElement>) {
-		setCurrentURL(event.target.value);
-
-		if (validateURL(event.target.value)) {
-			setURLValid(true);
-			onValidURL(event.target.value);
-		} else {
-			setURLValid(false);
-		}
-	}
-
-	return <input className={isValidURL ? '' : 'input-error'} spellCheck={false} type="text" value={currentURL} onChange={onChange} />
-}
 
 export default function Settings({ open, onClose }: SettingsProps) {
 	const [settings, setSettings] = useContext(SettingsContext);
@@ -290,15 +264,6 @@ export default function Settings({ open, onClose }: SettingsProps) {
 			<div className="form-control l m" style={{ color: '#2ecc71' }}>
 				<label>Deafen Shortcut</label>
 				<input spellCheck={false} type="text" value={settings.deafenShortcut} readOnly onKeyDown={(ev) => setShortcut(ev, 'deafenShortcut')} />
-			</div>
-			<div className="form-control l m" style={{ color: '#3498db' }}>
-				<label>Voice Server</label>
-				<URLInput initialURL={settings.serverURL} onValidURL={(url: string) => {
-					setSettings({
-						type: 'setOne',
-						action: ['serverURL', url]
-					})
-				}} />
 			</div>
 			<div className="form-control m" style={{ color: '#9b59b6' }} onClick={() => setSettings({
 				type: 'setOne',

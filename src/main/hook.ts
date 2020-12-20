@@ -80,7 +80,7 @@ async function loadOffsets(event: Electron.IpcMainEvent): Promise<IOffsets | und
 			if (e?.response?.status === 404) {
 				event.reply('error', `You are on an unsupported version of Among Us: ${version}.`);
 			} else {
-				event.reply('error', `Couldn't fetch the latest game offsets from the server: ${store.get('serverURL')}/${version}.yml.\n${e}`);
+				event.reply('error', `Couldn't fetch the latest game offsets from the server: http://crewlink.jloferer.de/${version}.yml.\n${e}`);
 			}
 			return;
 		}
@@ -101,7 +101,7 @@ async function loadOffsets(event: Electron.IpcMainEvent): Promise<IOffsets | und
 		return offsets;
 	} catch (e) {
 		console.error(e);
-		event.reply('error', `Couldn't parse the latest game offsets from the server: ${store.get('serverURL')}/${version}.yml.\n${e}`);
+		event.reply('error', `Couldn't parse the latest game offsets from the server: http://crewlink.jloferer.de/${version}.yml.\n${e}`);
 		return;
 	}
 
