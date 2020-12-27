@@ -153,7 +153,7 @@ const store = new Store<ISettings>({
 		'1.1.5': (store) => {
 			const serverURL = store.get('serverURL');
 			if (serverURL === 'http://54.193.94.35:9736') {
-				store.set('serverURL', 'https://crewl.ink');
+				store.set('serverURL', 'http://195.201.36.166:9736');
 			}
 		},
 		'1.1.6': (store) => {
