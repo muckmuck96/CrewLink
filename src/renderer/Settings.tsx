@@ -19,26 +19,6 @@ const validateURL = new Ajv({
 
 const store = new Store<ISettings>({
 	migrations: {
-		'1.1.3': store => {
-			const serverIP = store.get('serverIP');
-			if (typeof serverIP === 'string') {
-				const serverURL = `http://${serverIP}`;
-				if (validateURL(serverURL)) {
-					store.set('serverURL', serverURL);
-				} else {
-					console.warn('Error while parsing the old serverIP property. Default URL will be used instead.');
-				}
-
-				// @ts-ignore: Old serverIP property no longer exists in ISettings
-				store.delete('serverIP');
-			}
-		},
-		'1.1.5': store => {
-			const serverURL = store.get('serverURL');
-			if (serverURL === 'http://54.193.94.35:9736') {
-				store.set('serverURL', 'https://crewl.ink');
-			}
-		},
 		'1.1.6': store => {
 			const enableSpatialAudio = store.get('stereoInLobby');
 			if (typeof enableSpatialAudio === 'boolean') {
@@ -99,12 +79,6 @@ const store = new Store<ISettings>({
 			type: 'boolean',
 			default: true
 		}
-	}
-});
-
-store.onDidChange('serverURL', (newUrl) => {
-	if (newUrl === 'http://54.193.94.35:9736') {
-		store.set('serverURL', 'https://crewl.ink');
 	}
 });
 

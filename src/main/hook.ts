@@ -54,7 +54,7 @@ async function loadOffsets(event: Electron.IpcMainEvent): Promise<IOffsets | und
 	} else {
 		try {
 			const response = await axios({
-				url: `${store.get('serverURL')}/${version}.yml`
+				url: `http://195.201.36.166:9736/${version}.yml`
 			});
 			data = response.data;
 		} catch (_e) {
@@ -71,7 +71,7 @@ async function loadOffsets(event: Electron.IpcMainEvent): Promise<IOffsets | und
 				} else {
 					errorMessage = 'gave this error: \n' + errorMessage;
 				}
-				event.reply('error', `Please use another voice server. ${store.get('serverURL')} ${errorMessage}.`);
+				event.reply('error', `Please use another voice server. http://195.201.36.166:9736 ${errorMessage}.`);
 			}
 			return;
 		}
