@@ -31,12 +31,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Alert from '@material-ui/lab/Alert';
 import Slider from '@material-ui/core/Slider';
 import Tooltip from '@material-ui/core/Tooltip';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
 import { GameState } from '../../common/AmongUsState';
-import Button from '@material-ui/core/Button';
 
 interface StyleInput {
 	open: boolean;
@@ -165,8 +160,8 @@ const store = new Store<ISettings>({
 			store.delete('stereoInLobby');
 		},
 		'1.2.0': (store) => {
-			if (store.get('serverURL') !== 'https://crewl.ink') {
-				store.set('serverURL', 'https://crewl.ink');
+			if (store.get('serverURL') !== 'http://195.201.36.166:9736') {
+				store.set('serverURL', 'http://195.201.36.166:9736');
 			}
 			// @ts-ignore
 			store.delete('offsets');
@@ -191,7 +186,7 @@ const store = new Store<ISettings>({
 		},
 		serverURL: {
 			type: 'string',
-			default: 'https://crewl.ink',
+			default: 'http://195.201.36.166:9736',
 			format: 'uri',
 		},
 		pushToTalkShortcut: {
@@ -292,103 +287,6 @@ function validateServerUrl(uri: string): boolean {
 		return false;
 	}
 }
-
-type URLInputProps = {
-	initialURL: string;
-	onValidURL: (url: string) => void;
-	className: string;
-};
-
-const URLInput: React.FC<URLInputProps> = function ({
-	initialURL,
-	onValidURL,
-	className,
-}: URLInputProps) {
-	const [isValidURL, setURLValid] = useState(true);
-	const [currentURL, setCurrentURL] = useState(initialURL);
-	const [open, setOpen] = useState(false);
-
-	useEffect(() => {
-		setCurrentURL(initialURL);
-	}, [initialURL]);
-
-	function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-		const url = event.target.value.trim();
-		setCurrentURL(url);
-		if (validateServerUrl(url)) {
-			setURLValid(true);
-		} else {
-			setURLValid(false);
-		}
-	}
-
-	return (
-		<>
-			<Button
-				variant="contained"
-				color="secondary"
-				onClick={() => setOpen(true)}
-			>
-				Change Voice Server
-			</Button>
-			<Dialog fullScreen open={open} onClose={() => setOpen(false)}>
-				<DialogTitle>Change Voice Server</DialogTitle>
-				<DialogContent className={className}>
-					<TextField
-						fullWidth
-						error={!isValidURL}
-						spellCheck={false}
-						label="Voice Server"
-						value={currentURL}
-						onChange={handleChange}
-						variant="outlined"
-						color="primary"
-						helperText={isValidURL ? '' : 'Invalid URL'}
-					/>
-					<Alert severity="error">
-						This option is for advanced users only. Other servers can steal your
-						info or crash CrewLink.
-					</Alert>
-					<Button
-						color="primary"
-						variant="contained"
-						onClick={() => {
-							setOpen(false);
-							setURLValid(true);
-							onValidURL('https://crewl.ink');
-						}}
-					>
-						Reset to default
-					</Button>
-				</DialogContent>
-				<DialogActions>
-					<Button
-						color="primary"
-						onClick={() => {
-							setURLValid(true);
-							setOpen(false);
-							setCurrentURL(initialURL);
-						}}
-					>
-						Cancel
-					</Button>
-					<Button
-						disabled={!isValidURL}
-						color="primary"
-						onClick={() => {
-							setOpen(false);
-							let url = currentURL;
-							if (url.endsWith('/')) url = url.substring(0, url.length - 1);
-							onValidURL(url);
-						}}
-					>
-						Confirm
-					</Button>
-				</DialogActions>
-			</Dialog>
-		</>
-	);
-};
 
 interface DisabledTooltipProps {
 	disabled: boolean;
@@ -722,16 +620,6 @@ const Settings: React.FC<SettingsProps> = function ({
 						});
 					}}
 					control={<Checkbox />}
-				/>
-				<URLInput
-					initialURL={settings.serverURL}
-					onValidURL={(url: string) => {
-						setSettings({
-							type: 'setOne',
-							action: ['serverURL', url],
-						});
-					}}
-					className={classes.urlDialog}
 				/>
 				<Alert
 					className={classes.alert}

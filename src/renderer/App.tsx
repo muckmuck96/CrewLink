@@ -19,9 +19,8 @@ import {
 	SettingsContext,
 	LobbySettingsContext,
 } from './contexts';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import {
-	AutoUpdaterState,
 	IpcHandlerMessages,
 	IpcMessages,
 	IpcRendererMessages,
@@ -31,15 +30,6 @@ import theme from './theme';
 import SettingsIcon from '@material-ui/icons/Settings';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import Dialog from '@material-ui/core/Dialog';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import prettyBytes from 'pretty-bytes';
 
 let appVersion = '';
 if (typeof window !== 'undefined' && window.location) {
@@ -116,9 +106,6 @@ function App() {
 	const [gameState, setGameState] = useState<AmongUsState>({} as AmongUsState);
 	const [settingsOpen, setSettingsOpen] = useState(false);
 	const [error, setError] = useState('');
-	const [updaterState, setUpdaterState] = useState<AutoUpdaterState>({
-		state: 'unavailable',
-	});
 	const settings = useReducer(settingsReducer, {
 		alwaysOnTop: false,
 		microphone: 'Default',
@@ -150,12 +137,6 @@ function App() {
 			shouldInit = false;
 			setError(error);
 		};
-		const onAutoUpdaterStateChange = (
-			_: Electron.IpcRendererEvent,
-			state: AutoUpdaterState
-		) => {
-			setUpdaterState((old) => ({ ...old, ...state }));
-		};
 		let shouldInit = true;
 		ipcRenderer
 			.invoke(IpcHandlerMessages.START_HOOK)
@@ -170,18 +151,10 @@ function App() {
 					setError(error.message);
 				}
 			});
-		ipcRenderer.on(
-			IpcRendererMessages.AUTO_UPDATER_STATE,
-			onAutoUpdaterStateChange
-		);
 		ipcRenderer.on(IpcRendererMessages.NOTIFY_GAME_OPENED, onOpen);
 		ipcRenderer.on(IpcRendererMessages.NOTIFY_GAME_STATE_CHANGED, onState);
 		ipcRenderer.on(IpcRendererMessages.ERROR, onError);
 		return () => {
-			ipcRenderer.off(
-				IpcRendererMessages.AUTO_UPDATER_STATE,
-				onAutoUpdaterStateChange
-			);
 			ipcRenderer.off(IpcRendererMessages.NOTIFY_GAME_OPENED, onOpen);
 			ipcRenderer.off(IpcRendererMessages.NOTIFY_GAME_STATE_CHANGED, onState);
 			ipcRenderer.off(IpcRendererMessages.ERROR, onError);
@@ -212,41 +185,6 @@ function App() {
 							open={settingsOpen}
 							onClose={() => setSettingsOpen(false)}
 						/>
-						<Dialog fullWidth open={updaterState.state !== 'unavailable'}>
-							<DialogTitle>Updating...</DialogTitle>
-							<DialogContent>
-								{(updaterState.state === 'downloading' ||
-									updaterState.state === 'downloaded') &&
-									updaterState.progress && (
-										<>
-											<LinearProgress
-												variant={
-													updaterState.state === 'downloaded'
-														? 'indeterminate'
-														: 'determinate'
-												}
-												value={updaterState.progress.percent}
-											/>
-											<DialogContentText>
-												{prettyBytes(updaterState.progress.transferred)} /{' '}
-												{prettyBytes(updaterState.progress.total)}
-											</DialogContentText>
-										</>
-									)}
-								{updaterState.state === 'error' && (
-									<DialogContentText color="error">
-										{updaterState.error}
-									</DialogContentText>
-								)}
-							</DialogContent>
-							{updaterState.state === 'error' && (
-								<DialogActions>
-									<Button href="https://github.com/ottomated/CrewLink/releases/latest">
-										Download Manually
-									</Button>
-								</DialogActions>
-							)}
-						</Dialog>
 						{page}
 					</ThemeProvider>
 				</SettingsContext.Provider>

@@ -1,14 +1,11 @@
 'use strict';
 
-import { autoUpdater } from 'electron-updater';
 import { app, BrowserWindow } from 'electron';
 import windowStateKeeper from 'electron-window-state';
 import { join as joinPath } from 'path';
 import { format as formatUrl } from 'url';
 import './hook';
 import { initializeIpcHandlers, initializeIpcListeners } from './ipc-handlers';
-import { IpcRendererMessages } from '../common/ipc-messages';
-import { ProgressInfo } from 'builder-util-runtime';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -56,13 +53,13 @@ function createMainWindow() {
 			`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}?version=DEV`
 		);
 	} else {
-		crewlinkVersion = autoUpdater.currentVersion.version;
+		crewlinkVersion = '1.2.1';
 		window.loadURL(
 			formatUrl({
 				pathname: joinPath(__dirname, 'index.html'),
 				protocol: 'file',
 				query: {
-					version: autoUpdater.currentVersion.version,
+					version: '1.2.1',
 				},
 				slashes: true,
 			})
@@ -88,60 +85,6 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
 	app.quit();
 } else {
-	autoUpdater.checkForUpdates();
-	autoUpdater.on('update-available', () => {
-		mainWindow?.webContents.send(IpcRendererMessages.AUTO_UPDATER_STATE, {
-			state: 'available',
-		});
-	});
-	autoUpdater.on('error', (err: string) => {
-		mainWindow?.webContents.send(IpcRendererMessages.AUTO_UPDATER_STATE, {
-			state: 'error',
-			error: err,
-		});
-	});
-	autoUpdater.on('download-progress', (progress: ProgressInfo) => {
-		mainWindow?.webContents.send(IpcRendererMessages.AUTO_UPDATER_STATE, {
-			state: 'downloading',
-			progress,
-		});
-	});
-	autoUpdater.on('update-downloaded', () => {
-		mainWindow?.webContents.send(IpcRendererMessages.AUTO_UPDATER_STATE, {
-			state: 'downloaded',
-		});
-		app.relaunch();
-		autoUpdater.quitAndInstall();
-	});
-
-	// Mock auto-update download
-	// setTimeout(() => {
-	// 	mainWindow?.webContents.send(IpcRendererMessages.AUTO_UPDATER_STATE, {
-	// 		state: 'available'
-	// 	});
-	// 	let total = 1000*1000;
-	// 	let i = 0;
-	// 	let interval = setInterval(() => {
-	// 		mainWindow?.webContents.send(IpcRendererMessages.AUTO_UPDATER_STATE, {
-	// 			state: 'downloading',
-	// 			progress: {
-	// 				total,
-	// 				delta: total * 0.01,
-	// 				transferred: i * total / 100,
-	// 				percent: i,
-	// 				bytesPerSecond: 1000
-	// 			}
-	// 		} as AutoUpdaterState);
-	// 		i++;
-	// 		if (i === 100) {
-	// 			clearInterval(interval);
-	// 			mainWindow?.webContents.send(IpcRendererMessages.AUTO_UPDATER_STATE, {
-	// 				state: 'downloaded',
-	// 			});
-	// 		}
-	// 	}, 100);
-	// }, 10000);
-
 	app.on('second-instance', () => {
 		// Someone tried to run a second instance, we should focus our window.
 		if (mainWindow) {

@@ -1,6 +1,5 @@
 import React from 'react';
 import { ipcRenderer } from 'electron';
-import './css/menu.css';
 import { IpcMessages } from '../common/ipc-messages';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
