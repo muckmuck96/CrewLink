@@ -1,5 +1,7 @@
 import React, {
 	Dispatch,
+	ErrorInfo,
+	ReactChild,
 	SetStateAction,
 	useEffect,
 	useReducer,
@@ -23,6 +25,7 @@ import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import {
 	IpcHandlerMessages,
 	IpcMessages,
+	IpcOverlayMessages,
 	IpcRendererMessages,
 	IpcSyncMessages,
 } from '../common/ipc-messages';
@@ -101,7 +104,67 @@ enum AppState {
 	VOICE,
 }
 
-function App() {
+interface ErrorBoundaryProps {
+	children: ReactChild;
+}
+interface ErrorBoundaryState {
+	error?: Error;
+}
+
+class ErrorBoundary extends React.Component<
+	ErrorBoundaryProps,
+	ErrorBoundaryState
+> {
+	constructor(props: ErrorBoundaryProps) {
+		super(props);
+		this.state = {};
+	}
+
+	static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+		// Update state so the next render will show the fallback UI.
+		return { error };
+	}
+
+	componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+		console.error('React Error: ', error, errorInfo);
+	}
+
+	render(): ReactChild {
+		if (this.state.error) {
+			return (
+				<div style={{ paddingTop: 16 }}>
+					<Typography align="center" variant="h6" color="error">
+						REACT ERROR
+					</Typography>
+					<Typography
+						align="center"
+						style={{
+							whiteSpace: 'pre-wrap',
+							fontSize: 12,
+							maxHeight: 200,
+							overflowY: 'auto',
+						}}
+					>
+						{this.state.error.stack}
+					</Typography>
+					<SupportLink />
+					<Button
+						style={{ margin: '10px auto', display: 'block' }}
+						variant="contained"
+						color="secondary"
+						onClick={() => window.location.reload()}
+					>
+						Reload App
+					</Button>
+				</div>
+			);
+		}
+
+		return this.props.children;
+	}
+}
+
+const App: React.FC = function () {
 	const [state, setState] = useState<AppState>(AppState.MENU);
 	const [gameState, setGameState] = useState<AmongUsState>({} as AmongUsState);
 	const [settingsOpen, setSettingsOpen] = useState(false);
@@ -117,8 +180,13 @@ function App() {
 		muteShortcut: 'RAlt',
 		hideCode: false,
 		enableSpatialAudio: true,
+		meetingOverlay: true,
+		overlayPosition: 'right',
 		localLobbySettings: {
 			maxDistance: 5.32,
+			haunting: false,
+			hearImpostorsInVents: false,
+			commsSabotage: true,
 		},
 	});
 	const lobbySettings = useReducer(
@@ -162,6 +230,22 @@ function App() {
 		};
 	}, []);
 
+	useEffect(() => {
+		ipcRenderer.send(
+			IpcMessages.SEND_TO_OVERLAY,
+			IpcOverlayMessages.NOTIFY_GAME_STATE_CHANGED,
+			gameState
+		);
+	}, [gameState]);
+
+	useEffect(() => {
+		ipcRenderer.send(
+			IpcMessages.SEND_TO_OVERLAY,
+			IpcOverlayMessages.NOTIFY_SETTINGS_CHANGED,
+			settings[0]
+		);
+	}, [settings]);
+
 	let page;
 	switch (state) {
 		case AppState.MENU:
@@ -191,6 +275,6 @@ function App() {
 			</LobbySettingsContext.Provider>
 		</GameStateContext.Provider>
 	);
-}
+};
 
 ReactDOM.render(<App />, document.getElementById('app'));
