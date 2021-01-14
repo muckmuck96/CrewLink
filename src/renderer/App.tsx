@@ -1,7 +1,5 @@
 import React, {
 	Dispatch,
-	ErrorInfo,
-	ReactChild,
 	SetStateAction,
 	useEffect,
 	useReducer,
@@ -102,66 +100,6 @@ const TitleBar: React.FC<TitleBarProps> = function ({
 enum AppState {
 	MENU,
 	VOICE,
-}
-
-interface ErrorBoundaryProps {
-	children: ReactChild;
-}
-interface ErrorBoundaryState {
-	error?: Error;
-}
-
-class ErrorBoundary extends React.Component<
-	ErrorBoundaryProps,
-	ErrorBoundaryState
-> {
-	constructor(props: ErrorBoundaryProps) {
-		super(props);
-		this.state = {};
-	}
-
-	static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-		// Update state so the next render will show the fallback UI.
-		return { error };
-	}
-
-	componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-		console.error('React Error: ', error, errorInfo);
-	}
-
-	render(): ReactChild {
-		if (this.state.error) {
-			return (
-				<div style={{ paddingTop: 16 }}>
-					<Typography align="center" variant="h6" color="error">
-						REACT ERROR
-					</Typography>
-					<Typography
-						align="center"
-						style={{
-							whiteSpace: 'pre-wrap',
-							fontSize: 12,
-							maxHeight: 200,
-							overflowY: 'auto',
-						}}
-					>
-						{this.state.error.stack}
-					</Typography>
-					<SupportLink />
-					<Button
-						style={{ margin: '10px auto', display: 'block' }}
-						variant="contained"
-						color="secondary"
-						onClick={() => window.location.reload()}
-					>
-						Reload App
-					</Button>
-				</div>
-			);
-		}
-
-		return this.props.children;
-	}
 }
 
 const App: React.FC = function () {

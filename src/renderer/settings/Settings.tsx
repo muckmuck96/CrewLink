@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
 	root: {
 		width: '100vw',
 		height: `calc(100vh - ${theme.spacing(3)}px)`,
+		color: 'white',
 		background: '#171717ad',
 		backdropFilter: 'blur(4px)',
 		position: 'absolute',
@@ -318,16 +319,18 @@ interface DisabledTooltipProps {
 	disabled: boolean;
 	title: string;
 	children: ReactChild;
+	color: string;
 }
 
 const DisabledTooltip: React.FC<DisabledTooltipProps> = function ({
 	disabled,
 	children,
 	title,
+	color,
 }: DisabledTooltipProps) {
 	if (disabled)
 		return (
-			<Tooltip placement="top" arrow title={title}>
+			<Tooltip placement="top" arrow title={title} color={color}>
 				<span>{children}</span>
 			</Tooltip>
 		);
@@ -454,18 +457,19 @@ const Settings: React.FC<SettingsProps> = function ({
 				>
 					<ChevronLeft htmlColor="#777" />
 				</IconButton>
-				<Typography variant="h6">Settings</Typography>
+				<Typography variant="h6" color="secondary">Settings</Typography>
 			</div>
 			<div className={classes.scroll}>
 				{/* Lobby Settings */}
 				<div>
-					<Typography variant="h6">Lobby Settings</Typography>
-					<Typography gutterBottom>
+					<Typography variant="h6" color="secondary">Lobby Settings</Typography>
+					<Typography gutterBottom color="secondary">
 						Voice Distance:{' '}
 						{canChangeLobbySettings ? localDistance : lobbySettings.maxDistance}
 					</Typography>
 					<DisabledTooltip
 						disabled={!canChangeLobbySettings}
+						color="secondary"
 						title={
 							isInMenuOrLobby
 								? 'Only the game host can change this!'
@@ -501,6 +505,7 @@ const Settings: React.FC<SettingsProps> = function ({
 					</DisabledTooltip>
 					<DisabledTooltip
 						disabled={!canChangeLobbySettings}
+						color="secondary"
 						title={
 							isInMenuOrLobby
 								? 'Only the game host can change this!'
@@ -532,6 +537,7 @@ const Settings: React.FC<SettingsProps> = function ({
 					</DisabledTooltip>
 					<DisabledTooltip
 						disabled={!canChangeLobbySettings}
+						color="secondary"
 						title={
 							isInMenuOrLobby
 								? 'Only the game host can change this!'
@@ -563,6 +569,7 @@ const Settings: React.FC<SettingsProps> = function ({
 					</DisabledTooltip>
 					<DisabledTooltip
 						disabled={!canChangeLobbySettings}
+						color="secondary"
 						title={
 							isInMenuOrLobby
 								? 'Only the game host can change this!'
@@ -594,7 +601,7 @@ const Settings: React.FC<SettingsProps> = function ({
 					</DisabledTooltip>
 				</div>
 				<Divider />
-				<Typography variant="h6">Audio</Typography>
+				<Typography variant="h6" color="secondary">Audio</Typography>
 				<TextField
 					select
 					label="Microphone"
@@ -664,7 +671,7 @@ const Settings: React.FC<SettingsProps> = function ({
 					/>
 				</RadioGroup>
 				<Divider />
-				<Typography variant="h6">Keyboard Shortcuts</Typography>
+				<Typography variant="h6" color="secondary">Keyboard Shortcuts</Typography>
 				<Grid container spacing={1}>
 					<Grid item xs={12}>
 						<TextField
@@ -717,7 +724,7 @@ const Settings: React.FC<SettingsProps> = function ({
 					</Grid>
 				</Grid>
 				<Divider />
-				<Typography variant="h6">Overlay</Typography>
+				<Typography variant="h6" color="secondary">Overlay</Typography>
 				<TextField
 					select
 					fullWidth
@@ -756,7 +763,7 @@ const Settings: React.FC<SettingsProps> = function ({
 					control={<Checkbox />}
 				/>
 				<Divider />
-				<Typography variant="h6">Advanced</Typography>
+				<Typography variant="h6" color="secondary">Advanced</Typography>
 				<FormControlLabel
 					label="Show Lobby Code"
 					checked={!settings.hideCode}

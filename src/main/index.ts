@@ -7,8 +7,6 @@ import { format as formatUrl } from 'url';
 import './hook';
 import { overlayWindow as electronOverlayWindow } from 'electron-overlay-window';
 import { initializeIpcHandlers, initializeIpcListeners } from './ipc-handlers';
-import { IpcRendererMessages } from '../common/ipc-messages';
-import { ProgressInfo } from 'builder-util-runtime';
 import iohook from 'iohook';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -107,7 +105,7 @@ function createOverlay() {
 
 	if (isDevelopment) {
 		window.loadURL(
-			`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}?version=${autoUpdater.currentVersion.version}&view=overlay`
+			`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}?version=${'2.0.1'}&view=overlay`
 		);
 	} else {
 		window.loadURL(
@@ -115,7 +113,7 @@ function createOverlay() {
 				pathname: joinPath(__dirname, 'index.html'),
 				protocol: 'file',
 				query: {
-					version: autoUpdater.currentVersion.version,
+					version: '2.0.1',
 					view: 'overlay',
 				},
 				slashes: true,
